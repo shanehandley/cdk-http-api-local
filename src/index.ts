@@ -24,7 +24,7 @@ export const apigwv2HttpApi = async (config: Config) => {
           try {
             const { queryStringParameters } = asQueryString(req.query)
 
-            const { statusCode, body, headers } = await lambda.execute<LambdaResult>({
+            const result = await lambda.execute({
               lambdaPath: fnPath,
               lambdaHandler: 'default',
               environment: env,
@@ -32,7 +32,9 @@ export const apigwv2HttpApi = async (config: Config) => {
               event: {
                 queryStringParameters,
               }
-            })
+            }) as LambdaResult
+
+            const { statusCode, body, headers } = result
 
             if (headers) {
               Object.keys(headers).forEach((key) => res.setHeader(key, headers[key]))

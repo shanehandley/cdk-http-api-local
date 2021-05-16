@@ -12,10 +12,10 @@ export const asQueryString = (queryStringParameters: { [key: string]: any }, hea
 
 export const emptyEvent = asHttpEvent({})
 
-export type LambdaResult = Promise<{
+export type LambdaResult = {
   statusCode: number,
   body: string,
   headers?: {
     [key: string]: string
   }
-}>
+}

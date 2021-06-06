@@ -1,16 +1,20 @@
 import { promises as fs } from 'fs'
 import * as path from 'path'
-import { ApiGatewayV2RouteProps, ApiGatewayV2IntegrationProps, LambdaFunctionProps } from '@fmtk/cfntypes'
+import {
+  ApiGatewayV2RouteProps,
+  ApiGatewayV2IntegrationProps,
+  LambdaFunctionProps,
+} from '@fmtk/cfntypes'
 
 interface CdkFnGetAtt {
-  "Fn::GetAtt": [string, "Arn"]
+  'Fn::GetAtt': [string, 'Arn']
 }
 
 interface CdkRouteDefinitionIntegrationTarget {
-  "Fn::Join": [
-    "",
+  'Fn::Join': [
+    '',
     [
-      "integrations/",
+      'integrations/',
       {
         Ref: string
       }
@@ -19,7 +23,7 @@ interface CdkRouteDefinitionIntegrationTarget {
 }
 
 type CdkLambdaFunctionDefinition = {
-  Type: "Aws::Lambda::Function"
+  Type: 'Aws::Lambda::Function'
   Properties: LambdaFunctionProps
 }
 
@@ -28,7 +32,7 @@ type ApiGatewayV2IntegrationProperties = ApiGatewayV2IntegrationProps & {
 }
 
 type CdkIntegrationDefinition = {
-  Type: "AWS::ApiGatewayV2::Integration"
+  Type: 'AWS::ApiGatewayV2::Integration'
   Properties: ApiGatewayV2IntegrationProperties
 }
 
@@ -37,7 +41,7 @@ type ApiGatewayV2RouteProperties = ApiGatewayV2RouteProps & {
 }
 
 type CdkRouteDefinition = {
-  Type: "AWS::ApiGatewayV2::Route"
+  Type: 'AWS::ApiGatewayV2::Route'
   Properties: ApiGatewayV2RouteProperties
 }
 
@@ -48,7 +52,7 @@ interface CdkTemplate {
 }
 
 interface ApiRouteDefinition {
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE'
   path: string
   fnPath: string
   env?: { [key: string]: string }
@@ -76,19 +80,32 @@ export class ApiGatewayV2HttpApiParser {
     const template = JSON.parse(file.toString()) as CdkTemplate
 
     const routes = Object.keys(template.Resources)
-      .filter((resourceTitle: string) => template.Resources[resourceTitle].Type === "AWS::ApiGatewayV2::Route")
-      .map((resource) => template.Resources[resource].Properties as ApiGatewayV2RouteProperties)
-      .map((route) => {
-        const integrationProps = this.getResourceByTitle<CdkIntegrationDefinition>(template, route.Target["Fn::Join"][1][1].Ref)
-        const lambdaProps = this.getResourceByTitle<CdkLambdaFunctionDefinition>(template, integrationProps.Properties.IntegrationUri['Fn::GetAtt'][0])
+      .filter(
+        (resourceTitle: string) =>
+          template.Resources[resourceTitle].Type === 'AWS::ApiGatewayV2::Route'
+      )
+      .map(
+        resource =>
+          template.Resources[resource].Properties as ApiGatewayV2RouteProperties
+      )
+      .map(route => {
+        const integrationProps = this.getResourceByTitle<
+          CdkIntegrationDefinition
+        >(template, route.Target['Fn::Join'][1][1].Ref)
+        const lambdaProps = this.getResourceByTitle<
+          CdkLambdaFunctionDefinition
+        >(template, integrationProps.Properties.IntegrationUri['Fn::GetAtt'][0])
 
         const [method, path] = route.RouteKey.split(' ')
 
         return {
           method,
           path,
-          fnPath: lambdaProps.Properties.Handler?.replace('.default', `.${lambdaFileExtension}`),
-          env: lambdaProps.Properties.Environment
+          fnPath: lambdaProps.Properties.Handler?.replace(
+            '.default',
+            `.${lambdaFileExtension}`
+          ),
+          env: lambdaProps.Properties.Environment,
         } as ApiRouteDefinition
       })
 
@@ -97,5 +114,8 @@ export class ApiGatewayV2HttpApiParser {
     return this.api
   }
 
-  private getResourceByTitle = <T>(template: CdkTemplate, resourceTitle: string): T => template.Resources[resourceTitle] as unknown as T
+  private getResourceByTitle = <T>(
+    template: CdkTemplate,
+    resourceTitle: string
+  ): T => (template.Resources[resourceTitle] as unknown) as T
 }

@@ -20,8 +20,8 @@ describe('Parser', () => {
           method: 'GET',
           path: '/test',
           fnPath: 'src/testFunction.ts',
-        }
-      ]
+        },
+      ],
     })
   })
 })

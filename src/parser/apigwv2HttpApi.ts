@@ -1,4 +1,5 @@
 import { promises as fs } from 'fs'
+import { HttpMethod } from '../'
 import * as path from 'path'
 import {
   ApiGatewayV2RouteProps,
@@ -51,8 +52,8 @@ interface CdkTemplate {
   }
 }
 
-interface ApiRouteDefinition {
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE'
+export interface ApiRouteDefinition {
+  method: HttpMethod
   path: string
   fnPath: string
   env?: { [key: string]: string }

@@ -1,10 +1,18 @@
-import express, { Request, Response, Express, IRouterMatcher } from 'express'
+import express, { Request, Response } from 'express'
 import * as lambda from 'lambda-local'
+import { default as Table } from 'cli-table'
 import { json } from 'body-parser'
-import { ApiGatewayV2HttpApiParser } from './parser/apigwv2HttpApi'
+import { ApiGatewayV2HttpApiParser, ApiRouteDefinition } from './parser'
 import { asQueryString, LambdaResult } from './events'
 
 const DEFAULT_PORT = 7887
+
+export enum HttpMethod {
+  GET = 'GET',
+  POST = 'POST',
+  PUT = 'PUT',
+  DELETE = 'DELETE'
+}
 
 export interface Config {
   templatePath: string
@@ -12,30 +20,25 @@ export interface Config {
   port?: number
 }
 
-const handle = (
-  server: Express,
-  httpMethod: string
-): IRouterMatcher<unknown> => {
-  switch (httpMethod) {
-    case 'POST':
-      return server.post
-    case 'PUT':
-      return server.put
-    case 'GET':
-      return server.get
-    case 'DELETE':
-      return server.delete
-    default:
-      throw new Error(`Unknown method ${httpMethod}`)
-  }
+const printApiEndpointTable = (routes: ApiRouteDefinition[], port: number): void => {
+  let table = new Table({
+    head: ['METHOD', 'URL', 'Fn']
+  })
+
+  routes.forEach(route => {
+    table.push(
+      [route.method, `http://localhost:${port}${route.path}`, route.fnPath],
+    )
+  })
+
+  console.log(table.toString())
 }
 
 export const apigwv2HttpApi = async (config: Config) => {
   const parser = new ApiGatewayV2HttpApiParser(config.templatePath)
   const api = await parser.parse()
 
-  const server = express()
-  server.use(json())
+  const server = express().use(json())
 
   api.routes?.map(async ({ method, path, fnPath, env }) => {
     const handler = async (req: Request, res: Response) => {
@@ -63,12 +66,30 @@ export const apigwv2HttpApi = async (config: Config) => {
       }
     }
 
-    handle(server, method)(path, handler)
+    try {
+      switch (method) {
+        case HttpMethod.POST:
+          return server.post(path, handler)
+        case HttpMethod.PUT:
+          return server.put(path, handler)
+        case HttpMethod.GET:
+          return server.get(path, handler)
+        case HttpMethod.DELETE:
+          return server.delete(path, handler)
+        default:
+          throw new Error(`Unknown method ${method}`)
+      }
+    } catch (e) {
+      console.error('cdk-http-api-local error: ', e)
+      return
+    }
   })
 
   const port = config.port || DEFAULT_PORT
 
   server.listen(port.toString(), () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${port}}`)
+
+    printApiEndpointTable(api.routes || [], port)
   })
 }

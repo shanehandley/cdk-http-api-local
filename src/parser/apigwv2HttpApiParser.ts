@@ -1,6 +1,13 @@
 import { promises as fs } from 'fs'
 import * as path from 'path'
-import { ApiDefinition, CdkTemplate, ApiGatewayV2RouteProperties, CdkIntegrationDefinition, CdkNodejsFunctionDefinition, ApiRouteDefinition } from './types'
+import {
+  ApiDefinition,
+  CdkTemplate,
+  ApiGatewayV2RouteProperties,
+  CdkIntegrationDefinition,
+  CdkNodejsFunctionDefinition,
+  ApiRouteDefinition,
+} from './types'
 import { CdkTemplateParser } from './cdkTemplateParser'
 import { Config } from '..'
 
@@ -43,7 +50,11 @@ export class ApiGatewayV2HttpApiParser extends CdkTemplateParser {
         return {
           method,
           path: functionPath,
-          fnPath: `${path.join(location, '../', Metadata['aws:asset:path'])}/index.js`,
+          fnPath: `${path.join(
+            location,
+            '../',
+            Metadata['aws:asset:path']
+          )}/index.js`,
           env: lambdaProps.Properties.Environment,
         } as ApiRouteDefinition
       })

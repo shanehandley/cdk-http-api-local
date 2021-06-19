@@ -23,7 +23,9 @@ describe('Parser', () => {
         {
           method: 'GET',
           path: '/test',
-          fnPath: expect.stringContaining('/asset.9dd88241a9acde7fb57ed54d31956af7fedc7228b364a7e935ecf43224b747ed/index.js'),
+          fnPath: expect.stringContaining(
+            '/asset.9dd88241a9acde7fb57ed54d31956af7fedc7228b364a7e935ecf43224b747ed/index.js'
+          ),
         },
       ],
     })

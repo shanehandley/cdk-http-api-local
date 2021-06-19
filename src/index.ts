@@ -9,7 +9,7 @@ const DEFAULT_PORT = 7887
 
 export interface Config {
   templatePath: string
-  port?: number,
+  port?: number
   logger?: {
     transports: string[]
   }
@@ -24,7 +24,9 @@ export const apigwv2HttpApi = async (config: Config) => {
   api.routes?.map(async ({ method, path, fnPath, env }) => {
     const handler = async (req: Request, res: Response) => {
       try {
-        const result = (await lambda.execute(buildAPIGatewayV2Event(fnPath, env, req))) as LambdaResult
+        const result = (await lambda.execute(
+          buildAPIGatewayV2Event(fnPath, env, req)
+        )) as LambdaResult
 
         const { statusCode, body, headers } = result
 

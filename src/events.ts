@@ -1,10 +1,13 @@
-import type { APIGatewayProxyEventQueryStringParameters, APIGatewayProxyEventV2 } from 'aws-lambda'
-import type { Request } from 'express'
+import {
+  APIGatewayProxyEventQueryStringParameters,
+  APIGatewayProxyEventV2,
+} from 'aws-lambda'
+import { Request } from 'express'
 
 export interface LambdaLocalExecutionOptions {
   event: {
     [key: string]: any
-  };
+  }
   lambdaPath?: string
   lambdaFunc?: string
   profilePath?: string
@@ -14,7 +17,7 @@ export interface LambdaLocalExecutionOptions {
   timeoutMs?: number
   environment?: {
     [key: string]: string
-  };
+  }
   envfile?: string
   envdestroy?: boolean
   verboseLevel?: number
@@ -31,10 +34,10 @@ export type LambdaResult = {
 }
 
 export const asHttpEventBody = (body: { [key: string]: any }, headers = {}) =>
-(({
-  headers,
-  body,
-} as unknown) as APIGatewayProxyEventV2)
+  (({
+    headers,
+    body,
+  } as unknown) as APIGatewayProxyEventV2)
 
 export const buildAPIGatewayV2Event = (
   fnPath: string,
@@ -48,5 +51,5 @@ export const buildAPIGatewayV2Event = (
     body: req.body,
     queryStringParameters: req.query as APIGatewayProxyEventQueryStringParameters,
   },
-  verboseLevel: 1
+  verboseLevel: 1,
 })

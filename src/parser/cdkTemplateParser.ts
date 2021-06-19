@@ -1,5 +1,5 @@
 import { Config } from '..'
-import type { ApiDefinition, CdkTemplate } from './types'
+import { ApiDefinition, CdkTemplate } from './types'
 
 export class CdkTemplateParser {
   private config: Config
@@ -16,8 +16,6 @@ export class CdkTemplateParser {
 
   getConfig = (): Config => this.config
 
-  getResourceByTitle = <T>(
-    template: CdkTemplate,
-    resourceTitle: string
-  ): T => (template.Resources[resourceTitle] as unknown) as T
+  getResourceByTitle = <T>(template: CdkTemplate, resourceTitle: string): T =>
+    (template.Resources[resourceTitle] as unknown) as T
 }

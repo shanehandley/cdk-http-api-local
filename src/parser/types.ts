@@ -1,4 +1,4 @@
-import type {
+import {
   ApiGatewayV2RouteProps,
   ApiGatewayV2IntegrationProps,
   LambdaFunctionProps,
@@ -8,7 +8,7 @@ export enum HttpMethod {
   GET = 'GET',
   POST = 'POST',
   PUT = 'PUT',
-  DELETE = 'DELETE'
+  DELETE = 'DELETE',
 }
 
 export interface CdkTemplate {
@@ -37,13 +37,14 @@ export interface CdkRouteDefinitionIntegrationTarget {
 
 export type CdkLambdaFunctionDefinition = {
   Type: 'Aws::Lambda::Function'
-  Properties: LambdaFunctionProps,
+  Properties: LambdaFunctionProps
 }
 
-export interface CdkNodejsFunctionDefinition extends CdkLambdaFunctionDefinition {
+export interface CdkNodejsFunctionDefinition
+  extends CdkLambdaFunctionDefinition {
   Metadata: {
-    'aws:cdk:path': string,
-    'aws:asset:path': string,
+    'aws:cdk:path': string
+    'aws:asset:path': string
     'aws:asset:property': string
   }
 }

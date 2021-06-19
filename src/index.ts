@@ -1,41 +1,23 @@
 import express, { Request, Response } from 'express'
 import * as lambda from 'lambda-local'
-import { default as Table } from 'cli-table'
 import { json } from 'body-parser'
-import { ApiGatewayV2HttpApiParser, ApiRouteDefinition } from './parser'
-import { asQueryString, LambdaResult } from './events'
+import { printApiEndpointTable } from './utils'
+import { ApiGatewayV2HttpApiParser, HttpMethod } from './parser'
+import { buildAPIGatewayV2Event, LambdaResult } from './events'
 
 const DEFAULT_PORT = 7887
-
-export enum HttpMethod {
-  GET = 'GET',
-  POST = 'POST',
-  PUT = 'PUT',
-  DELETE = 'DELETE'
-}
 
 export interface Config {
   templatePath: string
   lambdaFileExtension: 'ts' | 'js'
-  port?: number
-}
-
-const printApiEndpointTable = (routes: ApiRouteDefinition[], port: number): void => {
-  let table = new Table({
-    head: ['METHOD', 'URL', 'Fn']
-  })
-
-  routes.forEach(route => {
-    table.push(
-      [route.method, `http://localhost:${port}${route.path}`, route.fnPath],
-    )
-  })
-
-  console.log(table.toString())
+  port?: number,
+  logger?: {
+    transports: string[]
+  }
 }
 
 export const apigwv2HttpApi = async (config: Config) => {
-  const parser = new ApiGatewayV2HttpApiParser(config.templatePath)
+  const parser = new ApiGatewayV2HttpApiParser(config)
   const api = await parser.parse()
 
   const server = express().use(json())
@@ -43,16 +25,7 @@ export const apigwv2HttpApi = async (config: Config) => {
   api.routes?.map(async ({ method, path, fnPath, env }) => {
     const handler = async (req: Request, res: Response) => {
       try {
-        const result = (await lambda.execute({
-          lambdaPath: fnPath,
-          lambdaHandler: 'default',
-          environment: env,
-          timeoutMs: 5000,
-          event: {
-            body: req.body,
-            queryStringParameters: asQueryString(req.query),
-          },
-        })) as LambdaResult
+        const result = (await lambda.execute(buildAPIGatewayV2Event(fnPath, env, req))) as LambdaResult
 
         const { statusCode, body, headers } = result
 

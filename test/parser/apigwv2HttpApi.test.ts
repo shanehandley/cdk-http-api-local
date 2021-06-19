@@ -1,8 +1,11 @@
-import { ApiGatewayV2HttpApiParser as Parser } from '../../src/parser/apigwv2HttpApi'
+import { ApiGatewayV2HttpApiParser as Parser } from '../../src/parser/apigwv2HttpApiParser'
 
 describe('Parser', () => {
   it('validates the file at template path exists', async () => {
-    const parser = new Parser('./blah.json')
+    const parser = new Parser({
+      templatePath: '/blah.json',
+      lambdaFileExtension: 'ts'
+    })
 
     const parse = async () => parser.parse()
 
@@ -10,7 +13,10 @@ describe('Parser', () => {
   })
 
   it('parses a simple ApiGatewayv2 API from a template', async () => {
-    const parser = new Parser('./test/fixtures/apigwv2/simple-api.json')
+    const parser = new Parser({
+      templatePath: './test/fixtures/apigwv2/simple-api.json',
+      lambdaFileExtension: 'ts'
+    })
 
     const parse = async () => parser.parse()
 

@@ -4,7 +4,6 @@ describe('Parser', () => {
   it('validates the file at template path exists', async () => {
     const parser = new Parser({
       templatePath: '/blah.json',
-      lambdaFileExtension: 'ts'
     })
 
     const parse = async () => parser.parse()
@@ -15,7 +14,6 @@ describe('Parser', () => {
   it('parses a simple ApiGatewayv2 API from a template', async () => {
     const parser = new Parser({
       templatePath: './test/fixtures/apigwv2/simple-api.json',
-      lambdaFileExtension: 'ts'
     })
 
     const parse = async () => parser.parse()
@@ -25,7 +23,7 @@ describe('Parser', () => {
         {
           method: 'GET',
           path: '/test',
-          fnPath: 'src/testFunction.ts',
+          fnPath: expect.stringContaining('/asset.9dd88241a9acde7fb57ed54d31956af7fedc7228b364a7e935ecf43224b747ed/index.js'),
         },
       ],
     })

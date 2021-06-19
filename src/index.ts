@@ -9,7 +9,6 @@ const DEFAULT_PORT = 7887
 
 export interface Config {
   templatePath: string
-  lambdaFileExtension: 'ts' | 'js'
   port?: number,
   logger?: {
     transports: string[]

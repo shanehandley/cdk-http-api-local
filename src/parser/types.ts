@@ -37,7 +37,15 @@ export interface CdkRouteDefinitionIntegrationTarget {
 
 export type CdkLambdaFunctionDefinition = {
   Type: 'Aws::Lambda::Function'
-  Properties: LambdaFunctionProps
+  Properties: LambdaFunctionProps,
+}
+
+export interface CdkNodejsFunctionDefinition extends CdkLambdaFunctionDefinition {
+  Metadata: {
+    'aws:cdk:path': string,
+    'aws:asset:path': string,
+    'aws:asset:property': string
+  }
 }
 
 export type ApiGatewayV2IntegrationProperties = ApiGatewayV2IntegrationProps & {

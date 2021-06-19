@@ -12,15 +12,20 @@ This reads the CDK template output and builds the API from Route and Integration
 
 Heavy lifting is done via `lambda-local`
 
+## Assumptions
+
+- CDK is outputting an AWS::APIGatewayv2 resource (not v1)
+- Functions are defined using the [@aws-cdk/aws-lambda-nodejs module](https://docs.aws.amazon.com/cdk/api/latest/docs/aws-lambda-nodejs-readme.html)
+
 ## Usage
 
 `local.ts`
+
 ```ts
 import { apigwv2HttpApi } from 'cdk-http-api-local'
 
 apigwv2HttpApi({
   templatePath: './infrastructure/cdk.out/api.template.json',
-  lambdaFileExtension: 'ts',
   port: 1234
 })
 ```

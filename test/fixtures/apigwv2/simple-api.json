@@ -20,7 +20,9 @@
         "AutoDeploy": true
       },
       "Metadata": {
-        "aws:cdk:path": "StacksStack/TestAPI/DefaultStage/Resource"
+        "aws:cdk:path": "StacksStack/TestAPI/DefaultStage/Resource",
+        "aws:asset:path": "asset.f30a01a95b8aa14b1f46c7b64849c5540499f20109c293b21b832f39054f4025",
+        "aws:asset:property": "Code"
       }
     },
     "TestAPIGETtestStacksStackTestAPIGETtestAE841BF7Permission97DDD55E": {

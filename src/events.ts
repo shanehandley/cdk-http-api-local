@@ -1,6 +1,26 @@
 import type { APIGatewayProxyEventQueryStringParameters, APIGatewayProxyEventV2 } from 'aws-lambda'
 import type { Request } from 'express'
-import { ExecutionOptions } from 'lambda-local'
+
+export interface LambdaLocalExecutionOptions {
+  event: {
+    [key: string]: any
+  };
+  lambdaPath?: string
+  lambdaFunc?: string
+  profilePath?: string
+  profileName?: string
+  lambdaHandler?: string
+  region?: string
+  timeoutMs?: number
+  environment?: {
+    [key: string]: string
+  };
+  envfile?: string
+  envdestroy?: boolean
+  verboseLevel?: number
+  callback?: (_err: any, _done: any) => void
+  clientContext?: string
+}
 
 export type LambdaResult = {
   statusCode: number
@@ -20,13 +40,13 @@ export const buildAPIGatewayV2Event = (
   fnPath: string,
   env: { [key: string]: string },
   req: Request
-): ExecutionOptions => ({
+): LambdaLocalExecutionOptions => ({
   lambdaPath: fnPath,
-  lambdaHandler: 'default',
   environment: env,
   timeoutMs: 8000,
   event: {
     body: req.body,
     queryStringParameters: req.query as APIGatewayProxyEventQueryStringParameters,
   },
+  verboseLevel: 1
 })

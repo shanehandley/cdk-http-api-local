@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs'
 import * as path from 'path'
-import { ApiDefinition, CdkTemplate, ApiGatewayV2RouteProperties, CdkIntegrationDefinition, CdkLambdaFunctionDefinition, ApiRouteDefinition } from './types'
+import { ApiDefinition, CdkTemplate, ApiGatewayV2RouteProperties, CdkIntegrationDefinition, CdkNodejsFunctionDefinition, ApiRouteDefinition } from './types'
 import { CdkTemplateParser } from './cdkTemplateParser'
 import { Config } from '..'
 
@@ -34,19 +34,16 @@ export class ApiGatewayV2HttpApiParser extends CdkTemplateParser {
           CdkIntegrationDefinition
         >(template, route.Target['Fn::Join'][1][1].Ref)
         const lambdaProps = this.getResourceByTitle<
-          CdkLambdaFunctionDefinition
+          CdkNodejsFunctionDefinition
         >(template, integrationProps.Properties.IntegrationUri['Fn::GetAtt'][0])
 
-        const [method, path] = route.RouteKey.split(' ')
-        const { lambdaFileExtension } = this.getConfig()
+        const [method, functionPath] = route.RouteKey.split(' ')
+        const { Metadata } = lambdaProps
 
         return {
           method,
-          path,
-          fnPath: lambdaProps.Properties.Handler?.replace(
-            '.default',
-            `.${lambdaFileExtension}`
-          ),
+          path: functionPath,
+          fnPath: `${path.join(location, '../', Metadata['aws:asset:path'])}/index.js`,
           env: lambdaProps.Properties.Environment,
         } as ApiRouteDefinition
       })
